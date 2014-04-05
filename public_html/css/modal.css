@@ -1,0 +1,39 @@
+/* Normal styles for the modal */
+#modal {
+
+border: solid 5px white;
+    position: fixed;
+    left: 50%;
+    top: 50%;
+     bottom: 30%;
+    background-color: 99CCFF;
+    z-index: 100;
+    height: 400px;
+    margin-top: -200px;
+    width: 600px;
+    margin-left: -300px;
+     display:none;
+
+	/*left:50%;
+	margin:-250px 0 0 -40%;
+	top:50%;
+	width:30%;
+	height:50%;
+	border-radius:5px;
+	box-shadow:0 3px 7px rgba(0,0,0,.25);
+	-moz-box-shadow:0 3px 7px rgba(0,0,0,.25);
+	-webkit-box-shadow:0 3px 7px rgba(0,0,0,.25);
+	box-sizing:border-box;
+	-moz-box-sizing:border-box;
+	-webkit-box-sizing:border-box;
+	*/
+	overflow: scroll;
+}
+	/* Make the modal appear when targeted */
+	#modal:target {
+		//top:50%;
+		display:inline;
+		transition: all 0.4s ease-in-out;
+		-moz-transition: all 0.4s ease-in-out;
+		-webkit-transition: all 0.4s ease-in-out;
+	}

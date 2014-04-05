@@ -1,0 +1,7 @@
+<?php
+$server = "mysql5.000webhost.com";
+$dbname = "a5831203_music";
+$user = "a5831203_hanqing";
+$pass = "dota3.com";
+$port = "3306";
+?>
