@@ -1,8 +1,8 @@
 <?php
 include ('conn/connData.txt');
-
+session_start();
 $musicid = $_GET['musicid'];
-$id = $_GET['id'];
+$id = $_SESSION['email'];
 $mysqli = new mysqli($server, $user, $pass, $dbname, $port);
 
 $stmt = $mysqli->prepare("INSERT INTO comments(userid,musicid) VALUES (?,?)");
@@ -21,6 +21,5 @@ if(!$stmt->execute()){
 }
 $stmt->close();
 $mysqli->close();
-header("location:music.php?id=".$id);
-
+header("location:music.php");
 ?>

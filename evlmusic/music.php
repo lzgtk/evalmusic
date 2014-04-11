@@ -1,8 +1,15 @@
 <?php
 include('conn/connData.txt');
-$id = $_GET["id"];
-if(strcmp($id,'ilovechina@uoregon.edu') == 0){
-	header("location:admin.php");
+//if the post is empty than do get from session
+$id = $_POST["email"];
+session_start();
+if(empty($_SESSION['email'])){
+	$_SESSION['email'] = $id;
+}
+if(!empty($_POST['email'])){
+	$id = $_POST["email"];
+}else{
+	$id=$_SESSION["email"];
 }
 
 //---------------------------------------------set up the connection with mysql
@@ -18,7 +25,7 @@ function findComment($musicid)
 	$userid=NULL;
 	$message=NULL;
 	$time=NULL;
-	$sql = 'select userid, message,time from message where musicid='.$musicid;
+	$sql = 'select userid, message,time from message where musicid='.$musicid.' order by time ASC';
 
 	//create statement
 	$stmt=$mysqli->prepare($sql);
@@ -64,12 +71,14 @@ function isVoted($var){
 
 //search from database to grab all the information about one music
 
-$sql = 'select musicid, name, singer, filename from music';
+$sql = 'select musicid, name, singer, filename, IFNULL(total, 0) from music left join 
+(select musicid, count(userid) as total from comments group by musicid) as vote using(musicid) order by musicid DESC';
+
 $musicid=NULL;
 $name=NULL;
 $singer=NULL;
 $filename=NULL;
-
+$total = NULL;
 $stmt= $mysqli->prepare($sql);
 
 if(!$stmt){
@@ -79,7 +88,7 @@ if(!$stmt){
 if(!$stmt->execute()){
 	echo "Execute failed: (" . $stmt->errno . ") " . $stmt->error;
 }
-if(!$stmt->bind_result($musicid, $name, $singer, $filename)){
+if(!$stmt->bind_result($musicid, $name, $singer, $filename, $total)){
 	echo "Binding result failed: (" . $stmt->errno . ") " . $stmt->error;
 }
 ?>
@@ -94,9 +103,9 @@ if(!$stmt->bind_result($musicid, $name, $singer, $filename)){
 </style>
 
 <script type="text/javascript">
-function setValue(musicid, id){
+function setValue(musicid){
 	var a = document.getElementById('vote'); //or grab it by tagname etc
-	a.href = "vote.php?id=" + id + "&&musicid=" + musicid;
+	a.href = "vote.php?musicid=" + musicid;
 }
 function popup(musicid){
 	document.getElementById("key").value=musicid;
@@ -127,11 +136,11 @@ while($stmt->fetch()){
 	<br><a href="javascript:popup('.$musicid.')">Comments</a></td>'.
 	'<td><br>';
 	if(!isVoted($musicid)){
-		echo '<a href=#openModal onClick="setValue('.$musicid.','.$id.')"><image  src="img/like.jpg" width="30" height="30"></a>';
+		echo '<a href=#openModal onClick="setValue('.$musicid.')"><image  src="img/like.jpg" width="30" height="30"></a>';
 	}else{
 		echo 'Voted';
 	}
-	echo '</td></tr>';
+	echo '<br><font color=blue>'.$total.' Liked.</font></td></tr>';
 }
 
 ?>
@@ -150,13 +159,12 @@ while($stmt->fetch()){
 	<p align="center"><a href="javascript:close()">X close</a><p>
 	<form name="comments" id="comments" action="<?php echo $_SERVER['PHP_SELF']?>" method="get">
 		<input type="hidden" id="key" name="key">
-		<input type="hidden" name="id" value="<?php echo $id?>">
 	</form>
 	<?php
-
 function commentInsertion()
 {
 	global $mysqli;
+	global $id;
 	$query = 'INSERT INTO message(musicid, userid, message,time) VALUES (?,?,?,?)';
 	$date = date('Y-m-d H:i:s');
 	$stmt = $mysqli->prepare($query);
@@ -164,7 +172,7 @@ function commentInsertion()
 		echo "Prepare failed: (" . $mysqli->errno .")" . $mysqli->error;
 	
 	}
-	if(!$stmt->bind_param("isss", $_GET['musicid'],$_GET['id'], $_GET['content'], $date)){
+	if(!$stmt->bind_param("isss", $_GET['musicid'],$id, $_GET['content'], $date)){
 			echo "Binding parameters failed: (" . $stmt->errno . ") ".  $stmt->error;
 	}
 		
@@ -180,14 +188,13 @@ function commentInsertion()
 		echo '<form name="newcomments" method="get" action='.$_SERVER['PHP_SELF'].'>';
 		echo '<div class="text" style=" text-align:left;"> You say: </a> <br>';
 		echo '<textarea name="content" cols="36" rows="8" id="content" required = "required" style="border: 1 solid #888888;LINE-HEIGHT:18px;padding: 3px;"></textarea>';
-		echo '<input type="hidden" name="id" value="'.$id.'">';
 		echo '<input type="hidden" name="musicid" value="'.$key.'">';
 		echo '<input type="submit" value="Submit"/>';
 		echo '</form>';
 	}
 	if(!empty($_GET['content'])){
 		commentInsertion();
-		header("location:music.php?id=".$id);
+		header("location:music.php");
 	}
 	?>
 </div>

@@ -35,7 +35,7 @@ function counting($musicid){
 //search from database to grab all the information about one music
 
 $sql = 'select musicid, name, singer, filename, IFNULL(total, 0) from music left join 
-(select musicid, count(userid) as total from comments group by musicid) as vote using(musicid)';
+(select musicid, count(userid) as total from comments group by musicid) as vote using(musicid) order by time ASC';
 $musicid=NULL;
 $name=NULL;
 $singer=NULL;
@@ -63,15 +63,26 @@ if(!$stmt->bind_result($musicid, $name, $singer, $filename, $total)){
 </script>
 </head>
 <body>
-
 <div id="content">
+
 <table cellspacing="0">
 <tr><th>Author</th><th>Track</th><th>Delete</th><th>Total Votes</th></tr>
 <?php
 
 echo '<strong>Welcome, admin, <a href="index.php">Logout</a></strong><br>';
 ?>
-
+<br>
+<form name="upload" action="upload.php" method="post">
+<strong>Step 1:</strong> Add new music.<br>
+Singer: <input type="text" name="singer" required="required">
+<br>
+Music: <input type="text" name="mname" required="required">
+(Singer name + music name with .mp3)<br>
+<input type="submit" name="submit" value="submit">
+<br>
+<strong>Step 2: </strong><br>move the music with the exactly specified name into the music folder on the server.
+<br>
+</form>
 <?php
 while($stmt->fetch()){
 	echo '<tr><td><br>'.$singer.'</td>'.
