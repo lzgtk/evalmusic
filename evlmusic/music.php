@@ -107,15 +107,17 @@ function setValue(musicid){
 	var a = document.getElementById('vote'); //or grab it by tagname etc
 	a.href = "vote.php?musicid=" + musicid;
 }
+
 function popup(musicid){
 	document.getElementById("key").value=musicid;
 	document.getElementById("comments").submit();
-	//myWindow = window.open("messages.php?mid="+musicid, "", "width=800,height=800");
-	document.getElementById('modal').style.display = "inline";
 
 }
+
+
 function close(){
 	document.getElementById('modal').style.display = "none";
+
 }
 
 </script>
@@ -155,8 +157,8 @@ while($stmt->fetch()){
 	</div>
 </div>
 
-<div id="modal">
-	<p align="center"><a href="javascript:close()">X close</a><p>
+<div id="modal" class="modal">
+	<p align="center"><a href="javascript:close()"><img width="30" height="30" src="img/delete.jpg"></a></p>
 	<form name="comments" id="comments" action="<?php echo $_SERVER['PHP_SELF']?>" method="get">
 		<input type="hidden" id="key" name="key">
 	</form>
@@ -186,13 +188,13 @@ function commentInsertion()
 		$key=$_GET["key"];
 		findComment($key);
 		echo '<form name="newcomments" method="get" action='.$_SERVER['PHP_SELF'].'>';
-		echo '<div class="text" style=" text-align:left;"> You say: </a> <br>';
-		echo '<textarea name="content" cols="36" rows="8" id="content" required = "required" style="border: 1 solid #888888;LINE-HEIGHT:18px;padding: 3px;"></textarea>';
+		echo '<div class="text"> <font size="4" color=black>You say:</font>';
+		echo '<textarea name="contents" cols="36" rows="8" id="content" required = "required"></textarea>';
 		echo '<input type="hidden" name="musicid" value="'.$key.'">';
 		echo '<input type="submit" value="Submit"/>';
 		echo '</form>';
 	}
-	if(!empty($_GET['content'])){
+	if(!empty($_GET['contents'])){
 		commentInsertion();
 		header("location:music.php");
 	}

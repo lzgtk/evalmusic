@@ -35,7 +35,7 @@ function counting($musicid){
 //search from database to grab all the information about one music
 
 $sql = 'select musicid, name, singer, filename, IFNULL(total, 0) from music left join 
-(select musicid, count(userid) as total from comments group by musicid) as vote using(musicid) order by time ASC';
+(select musicid, count(userid) as total from comments group by musicid) as vote using(musicid) order by musicid ASC';
 $musicid=NULL;
 $name=NULL;
 $singer=NULL;
